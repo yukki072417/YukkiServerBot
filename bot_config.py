@@ -3,7 +3,7 @@ import os
 from dataclasses import dataclass, asdict
 from typing import Optional
 
-CONFIG_FILE = os.path.join(os.path.dirname(__file__), 'config.json')
+CONFIG_FILE = os.path.join(os.path.dirname(__file__), 'data', 'config.json')
 
 
 @dataclass
@@ -12,6 +12,7 @@ class BotConfig:
     log_send_enabled: bool = False
 
     def save(self):
+        os.makedirs(os.path.dirname(CONFIG_FILE), exist_ok=True)
         with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
             json.dump(asdict(self), f, indent=2, ensure_ascii=False)
 

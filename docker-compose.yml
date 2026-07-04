@@ -9,8 +9,8 @@ services:
       # RCON は host ネットワーク経由で localhost に接続
       - MC_RCON_HOST=localhost
     volumes:
-      # 設定の永続化
-      - ./config.json:/app/config.json
+      # 設定の永続化 (ディレクトリごとマウントすることでファイル/ディレクトリの混同を防ぐ)
+      - ./data:/app/data
       # MC サーバーディレクトリ (logs/latest.log の読み取りに必要)
       # .env の MC_SERVER_DIR をホスト側パスとして使用
       - ${MC_SERVER_DIR}:/mc-server:ro
