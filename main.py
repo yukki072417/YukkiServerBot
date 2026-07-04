@@ -31,15 +31,25 @@ class MinecraftBot(commands.Bot):
         await self.load_extension('cogs.server_cog')
         await self.load_extension('cogs.list_cog')
 
+        # コマンドツリーのエラーを捕捉してログに出す
+        @self.tree.error
+        async def on_tree_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
+            import traceback
+            print(f'[コマンドエラー] /{interaction.command and interaction.command.qualified_name}: {error}')
+            traceback.print_exc()
+            msg = f'エラーが発生しました。\n```{error}```'
+            if interaction.response.is_done():
+                await interaction.followup.send(msg, ephemeral=True)
+            else:
+                await interaction.response.send_message(msg, ephemeral=True)
+
         guild_id = os.environ.get('DISCORD_GUILD_ID')
         if guild_id:
-            # ギルド指定同期: 即時反映 (開発・本番ともに推奨)
             guild = discord.Object(id=int(guild_id))
             self.tree.copy_global_to(guild=guild)
             await self.tree.sync(guild=guild)
             print(f'ギルド {guild_id} にスラッシュコマンドを同期しました。')
         else:
-            # グローバル同期: 反映まで最大1時間かかる
             await self.tree.sync()
             print('スラッシュコマンドをグローバル同期しました (反映まで最大1時間)。')
 
@@ -48,19 +58,9 @@ class MinecraftBot(commands.Bot):
         print('------')
         self.mc_server.resume_monitoring()
 
-    async def on_app_command_error(
-        self,
-        interaction: discord.Interaction,
-        error: discord.app_commands.AppCommandError,
-    ):
-        import traceback
-        print(f'[コマンドエラー] {interaction.command and interaction.command.name}: {error}')
-        traceback.print_exc()
-        msg = f'エラーが発生しました。\n```{error}```'
-        if interaction.response.is_done():
-            await interaction.followup.send(msg, ephemeral=True)
-        else:
-            await interaction.response.send_message(msg, ephemeral=True)
+    async def on_interaction(self, interaction: discord.Interaction):
+        print(f'[インタラクション受信] type={interaction.type} data={interaction.data}')
+        await super().on_interaction(interaction)
 
     async def _on_player_join(self, player_name: str):
         await self._send_log(f'➡️ **{player_name}** がサーバーに参加しました。')
