@@ -31,8 +31,17 @@ class MinecraftBot(commands.Bot):
         await self.load_extension('cogs.server_cog')
         await self.load_extension('cogs.list_cog')
 
-        await self.tree.sync()
-        print('スラッシュコマンドを同期しました。')
+        guild_id = os.environ.get('DISCORD_GUILD_ID')
+        if guild_id:
+            # ギルド指定同期: 即時反映 (開発・本番ともに推奨)
+            guild = discord.Object(id=int(guild_id))
+            self.tree.copy_global_to(guild=guild)
+            await self.tree.sync(guild=guild)
+            print(f'ギルド {guild_id} にスラッシュコマンドを同期しました。')
+        else:
+            # グローバル同期: 反映まで最大1時間かかる
+            await self.tree.sync()
+            print('スラッシュコマンドをグローバル同期しました (反映まで最大1時間)。')
 
     async def on_ready(self):
         print(f'ログイン成功: {self.user} (ID: {self.user.id})')
