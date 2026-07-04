@@ -46,8 +46,21 @@ class MinecraftBot(commands.Bot):
     async def on_ready(self):
         print(f'ログイン成功: {self.user} (ID: {self.user.id})')
         print('------')
-        # Bot 起動時にサーバーがすでに動いていればログ監視を再開
         self.mc_server.resume_monitoring()
+
+    async def on_app_command_error(
+        self,
+        interaction: discord.Interaction,
+        error: discord.app_commands.AppCommandError,
+    ):
+        import traceback
+        print(f'[コマンドエラー] {interaction.command and interaction.command.name}: {error}')
+        traceback.print_exc()
+        msg = f'エラーが発生しました。\n```{error}```'
+        if interaction.response.is_done():
+            await interaction.followup.send(msg, ephemeral=True)
+        else:
+            await interaction.response.send_message(msg, ephemeral=True)
 
     async def _on_player_join(self, player_name: str):
         await self._send_log(f'➡️ **{player_name}** がサーバーに参加しました。')
