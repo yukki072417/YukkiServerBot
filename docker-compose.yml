@@ -10,8 +10,8 @@ services:
       # RCON は host ネットワーク経由で localhost に接続
       - MC_RCON_HOST=localhost
     volumes:
-      # 設定の永続化 (ディレクトリごとマウントすることでファイル/ディレクトリの混同を防ぐ)
-      - ./data:/app/data
+      # 設定の永続化 (named volume で権限問題を回避)
+      - bot_data:/app/data
       # MC サーバーディレクトリ (logs/latest.log の読み取りに必要)
       # .env の MC_SERVER_DIR をホスト側パスとして使用
       - ${MC_SERVER_DIR}:/mc-server:ro
@@ -22,3 +22,6 @@ services:
     # ホストで screen を実行しているユーザーの UID:GID に合わせる
     # `id` コマンドで確認 (例: uid=1000, gid=1000)
     user: "1000:1000"
+
+volumes:
+  bot_data:
