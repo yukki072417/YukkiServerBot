@@ -17,6 +17,9 @@ services:
       - ${MC_SERVER_DIR}:/mc-server:ro
       # screen セッションをホストと共有 (/server start|stop に必要)
       - /run/screen:/run/screen
+      # screen が getpwuid() でユーザー名を引けるようにホストのユーザーDBを共有
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
     # ホストのネットワークを使用 (RCON の localhost 接続に必要)
     network_mode: host
     # ホストで screen を実行しているユーザーの UID:GID に合わせる
