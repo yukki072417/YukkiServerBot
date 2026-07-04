@@ -1,0 +1,23 @@
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # コンテナ内では /mc-server にマウントされるため上書き
+      - MC_SERVER_DIR=/mc-server
+      # RCON は host ネットワーク経由で localhost に接続
+      - MC_RCON_HOST=localhost
+    volumes:
+      # 設定の永続化
+      - ./config.json:/app/config.json
+      # MC サーバーディレクトリ (logs/latest.log の読み取りに必要)
+      # .env の MC_SERVER_DIR をホスト側パスとして使用
+      - ${MC_SERVER_DIR}:/mc-server:ro
+      # screen セッションをホストと共有 (/server start|stop に必要)
+      - /run/screen:/run/screen
+    # ホストのネットワークを使用 (RCON の localhost 接続に必要)
+    network_mode: host
+    # ホストで screen を実行しているユーザーの UID:GID に合わせる
+    # `id` コマンドで確認 (例: uid=1000, gid=1000)
+    user: "1000:1000"
