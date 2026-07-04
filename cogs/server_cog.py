@@ -24,10 +24,10 @@ class ServerCog(commands.Cog):
             return
 
         if started:
-            await interaction.followup.send('サーバーを起動しました。完全に起動するまで少しお待ちください。')
-            await self._notify_log(f'マインクラフトサーバーが起動しました。')
+            await interaction.followup.send('マインクラフトサーバーが起動しました。')
+            await self._notify_log('マインクラフトサーバーが起動しました。')
         else:
-            await interaction.followup.send('サーバーの起動に失敗しました。')
+            await interaction.followup.send('サーバーの起動に失敗しました。screen セッションがすぐ終了しました。`run.sh` のパスや権限を確認してください。')
 
     @server_group.command(name='stop', description='マインクラフトサーバーを停止します')
     async def server_stop(self, interaction: discord.Interaction):

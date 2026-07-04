@@ -14,7 +14,7 @@ services:
       - bot_data:/app/data
       # MC サーバーディレクトリ (logs/latest.log の読み取りに必要)
       # .env の MC_SERVER_DIR をホスト側パスとして使用
-      - ${MC_SERVER_DIR}:/mc-server:ro
+      - ${MC_SERVER_DIR}:/mc-server
       # screen セッションをホストと共有 (/server start|stop に必要)
       - /run/screen:/run/screen
       # screen が getpwuid() でユーザー名を引けるようにホストのユーザーDBを共有

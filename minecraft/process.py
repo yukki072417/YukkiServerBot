@@ -52,8 +52,15 @@ class MinecraftServer:
         if proc.returncode != 0:
             return False
 
-        self._start_log_task()
-        return True
+        # screen セッションが実際に起動・維持されているか確認 (最大 15 秒)
+        for _ in range(15):
+            await asyncio.sleep(1)
+            if self.is_running:
+                self._start_log_task()
+                return True
+
+        # セッションがすぐ終了した場合は起動失敗
+        return False
 
     async def stop(self) -> bool:
         if not self.is_running:
